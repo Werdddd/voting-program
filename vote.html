@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love or Angry Voting</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: linear-gradient(275deg, #1e3c72 0%, #2948d2 50%, #5bc9ff 100%);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .main-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(to top, #1a3a6e 0%, #2948d2 50%, #5bc9ff 100%);
+  }
+
+  .side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .counter {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    text-align: center;
+  }
+
+  .counter h3 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 15px;
+    background: #1a1a1a;
+  }
+
+  .fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .love-fill { background: #00ff9c; }
+  .angry-fill { background: #ff4c4c; }
+
+  .vote-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .vote-btn img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+  }
+
+  .vote-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .vote-btn:active {
+    transform: scale(0.98);
+    opacity: 0.8;
+  }
+
+  .reset-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #FFF;
+    border: 1px solid #F2F2F2;
+    color: #000;
+    font-size: 0.7rem;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    z-index: 100;
+  }
+
+  .reset-btn:hover {
+    background: #B2B2B2;
+    color: #FFF;
+    border-color: #444;
+  }
+</style>
+</head>
+<body>
+
+<div class="main-container">
+  <div class="side">
+    <div class="counter">
+      <h3 id="loveCount">0</h3>
+    </div>
+    <button class="vote-btn" onclick="vote('love')">
+      <img src="love.png" alt="Love">
+    </button>
+    <div class="bar"><div id="loveFill" class="fill love-fill"></div></div>
+  </div>
+
+  <div class="side">
+    <div class="counter">
+      <h3 id="angryCount">0</h3>
+    </div>
+    <button class="vote-btn" onclick="vote('angry')">
+      <img src="angry.png" alt="Angry">
+    </button>
+    <div class="bar"><div id="angryFill" class="fill angry-fill"></div></div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetVotes()">Reset</button>
+
+<audio id="loveSound" preload="auto">
+  <source src="love.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="angrySound" preload="auto">
+  <source src="angry.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  let love = 0;
+  let angry = 0;
+
+  const loveAudio = document.getElementById('loveSound');
+  const angryAudio = document.getElementById('angrySound');
+
+  function playSound(type) {
+    const audio = type === 'love' ? loveAudio : angryAudio;
+    audio.currentTime = 0;
+    audio.play().catch(err => console.log('Audio play failed:', err));
+  }
+
+  function vote(type) {
+    playSound(type);
+    if (type === 'love') love++;
+    if (type === 'angry') angry++;
+    updateUI();
+  }
+
+  function updateUI() {
+    document.getElementById('loveCount').textContent = love;
+    document.getElementById('angryCount').textContent = angry;
+
+    const total = love + angry || 1;
+
+    document.getElementById('loveFill').style.width =
+      (love / total * 100) + '%';
+
+    document.getElementById('angryFill').style.width =
+      (angry / total * 100) + '%';
+  }
+
+  function resetVotes() {
+    love = 0;
+    angry = 0;
+    updateUI();
+  }
+</script>
+
+</body>
+</html>
